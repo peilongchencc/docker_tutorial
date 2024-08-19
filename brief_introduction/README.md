@@ -1,12 +1,15 @@
 # 简单介绍 Docker 和 Docker Compose
 
-Docker 是一个开源的平台，用于开发、部署和运行应用程序。它通过将应用程序及其所有依赖项打包成一个称为“容器”的可移植单元，来确保应用程序在任何环境中都可以一致地运行。
+Docker 是一种容器化技术。你可以把 Docker 看作一个虚拟的打包工具，它能将应用程序及其所有依赖打包成一个标准化的单位——Docker 镜像。
+
+这个镜像可以在任何支持 Docker 的地方运行，不管是在本地、服务器还是云上。容器（container）是基于镜像运行的实例，类似于虚拟机，但更加轻量。
 
 Docker 使得开发者能够在开发、测试和生产环境中使用相同的镜像，从而解决了 **"在我机器上可以运行"** 的问题。
 
 - [简单介绍 Docker 和 Docker Compose](#简单介绍-docker-和-docker-compose)
   - [Docker 的核心概念和功能：](#docker-的核心概念和功能)
   - [Docker 的使用场景：](#docker-的使用场景)
+  - [Dockerfile 是什么？](#dockerfile-是什么)
   - [Docker Compose 是什么？](#docker-compose-是什么)
   - [Docker Compose 的核心概念和功能：](#docker-compose-的核心概念和功能)
   - [Docker Compose 的使用场景：](#docker-compose-的使用场景)
@@ -32,6 +35,11 @@ Docker 使得开发者能够在开发、测试和生产环境中使用相同的�
 - 微服务架构：Docker 容器使得各个服务之间相互独立运行并且易于扩展和管理。
 
 - 跨平台部署：由于容器打包了应用程序及其所有依赖项，Docker 使得应用程序能够在任何支持 Docker 的平台上运行。
+
+
+## Dockerfile 是什么？
+
+`Dockerfile` 是一系列指令的集合，告诉 Docker 如何构建镜像。
 
 
 ## Docker Compose 是什么？
