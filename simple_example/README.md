@@ -14,6 +14,7 @@
     - [查看docker版本(可选):](#查看docker版本可选)
     - [方案一:为 Docker 配置代理](#方案一为-docker-配置代理)
     - [方案二:配置 Docker 镜像加速器](#方案二配置-docker-镜像加速器)
+    - [方案三: 如果只是pip问题，可以配置pip源](#方案三-如果只是pip问题可以配置pip源)
 
 
 ## 构建 Docker 镜像
@@ -233,4 +234,15 @@ sudo systemctl daemon-reload
 
 ```bash
 sudo systemctl restart docker
+```
+
+
+### 方案三: 如果只是pip问题，可以配置pip源
+
+将 `Dockerfile` 中的pip源改为国内源(例如阿里源)，示例代码如下:
+
+```bash
+RUN pip config set global.index-url https://mirrors.aliyun.com/pypi/simple/ && \
+    pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
 ```
