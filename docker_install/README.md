@@ -2,6 +2,8 @@
 
 本章介绍 Docker 和 Docker Compose 的安装与卸载。
 
+> 本章内容的经验基于笔者之前使用的 ubuntu 20.04 系统，不确定更高版本是否可用。
+
 - [Docker 和 Docker Compose 的安装与卸载](#docker-和-docker-compose-的安装与卸载)
   - [Docker和Docker Compose 安装:](#docker和docker-compose-安装)
   - [安装Docker Compose 1.25.1版本:](#安装docker-compose-1251版本)
