@@ -17,6 +17,10 @@
     - [6. 测试拉取:](#6-测试拉取)
     - [7. 启动拉取的docker镜像:](#7-启动拉取的docker镜像)
     - [8. 测试效果:](#8-测试效果)
+  - [附录: 修改从阿里云ACR拉取的镜像名称](#附录-修改从阿里云acr拉取的镜像名称)
+    - [1. 为镜像打上本地标签:](#1-为镜像打上本地标签)
+    - [2. 使用本地标签启动容器:](#2-使用本地标签启动容器)
+    - [本地标签重命名镜像带来的限制:](#本地标签重命名镜像带来的限制)
 
 
 ## 前提条件:
@@ -247,6 +251,9 @@ latest: digest: sha256:7a31f8df4eaebebbc4cb2cd1942c702d68976f34ed0883b051936b3df
 docker pull registry.cn-beijing.aliyuncs.com/peilongchencc_docker_hub/docker_test:latest
 ```
 
+> [!TIP]
+> 如果docker仓库发布了新的版本，你可以直接拉取新的镜像版本，无需先删除现有的镜像。Docker 会自动处理版本更新的情况。
+
 终端显示:
 
 ```log
@@ -298,3 +305,53 @@ curl -X POST "http://localhost:8848/items/" -H "Content-Type: application/json" 
 ```
 
 成功！可喜可贺🎉🎉🎉
+
+
+## 附录: 修改从阿里云ACR拉取的镜像名称
+
+有读者觉得，阿里云 ACR 镜像的完整名称相对较长，查看时非常不方便，想了解是否可以将镜像名称缩减，这是可以的，**通过本地标签重命名镜像** 可以做到，但同时会产生一些限制。关于限制可以查看最后一节。
+
+**使用本地标签重命名镜像** 的操作方法如下:
+
+### 1. 为镜像打上本地标签:
+
+你可以将从 ACR 拉取的镜像打一个简短的本地标签（例如 `my-fastapi-app:latest`）:
+
+```bash
+docker tag registry.cn-beijing.aliyuncs.com/peilongchencc_docker_hub/docker_test:latest my-fastapi-app:latest
+```
+
+### 2. 使用本地标签启动容器:
+
+```bash
+docker run -d -p 8848:8848 my-fastapi-app:latest
+```
+
+终端显示:
+
+```log
+(base) root@ubuntu22:~/data# docker ps
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+(base) root@ubuntu22:~/data# docker tag registry.cn-beijing.aliyuncs.com/peilongchencc_docker_hub/docker_test:latest my-fastapi-app:latest
+(base) root@ubuntu22:~/data# docker run -d -p 8848:8848 my-fastapi-app:latest
+716e8950cd1e20fa326469266057730b5706be2469e53591f1faf7e9b7909112
+(base) root@ubuntu22:~/data# docker ps
+CONTAINER ID   IMAGE                   COMMAND                   CREATED          STATUS          PORTS                                       NAMES
+716e8950cd1e   my-fastapi-app:latest   "/bin/bash -c '. doc…"   12 seconds ago   Up 11 seconds   0.0.0.0:8848->8848/tcp, :::8848->8848/tcp   suspicious_shannon
+(base) root@ubuntu22:~/data# 
+```
+
+### 本地标签重命名镜像带来的限制:
+
+通过本地标签重命名镜像可以提高使用的便捷性，但会丧失自动更新的能力。因为当你为镜像创建一个本地标签( `my-fastapi-app:latest` )后，这个标签与远程仓库（阿里云 ACR）的镜像就没有直接关联了。因此为保持自动更新，建议继续使用原始的完整镜像名称。
+
+当然你也可以采用每次获取最新版本后，重新打标签。例如:
+
+```bash
+docker pull registry.cn-beijing.aliyuncs.com/peilongchencc_docker_hub/docker_test:latest
+docker tag registry.cn-beijing.aliyuncs.com/peilongchencc_docker_hub/docker_test:latest my-fastapi-app:latest
+```
+
+更好的方式是使用 Docker Compose 等工具:
+
+如果你使用 Docker Compose 或 Kubernetes 等工具管理容器，可以在这些工具的配置文件中使用原始镜像名称（包括完整的仓库路径），这样就不需要手动拉取和重命名。工具可以自动处理镜像更新，并且不会影响你的部署流程。

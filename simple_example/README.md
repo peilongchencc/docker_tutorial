@@ -13,7 +13,6 @@
     - [测试根路径 (`/`):](#测试根路径-)
     - [测试 GET 请求 (`/items/{item_id}`):](#测试-get-请求-itemsitem_id)
     - [测试 POST 请求 (`/items/`):](#测试-post-请求-items)
-  - [docker compose的作用:](#docker-compose的作用)
   - [附录:构建指令拓展(可选)](#附录构建指令拓展可选)
     - [镜像标签（Tag）的概念](#镜像标签tag的概念)
     - [标签的结构](#标签的结构)
@@ -238,9 +237,6 @@ curl -X POST "http://localhost:8848/items/" -H "Content-Type: application/json" 
 ```json
 {"item":{"name":"apple","description":"A juicy fruit","price":1.5,"tax":0.1}}
 ```
-
-
-## docker compose的作用:
 
 
 ## 附录:构建指令拓展(可选)
