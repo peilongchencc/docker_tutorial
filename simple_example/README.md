@@ -1,5 +1,9 @@
 # 简单示例
+
+本章以的 `simple_example/docker_example` 文件为例，介绍 docker 的简单使用。
+
 - [简单示例](#简单示例)
+  - [切换路径:](#切换路径)
   - [构建 Docker 镜像](#构建-docker-镜像)
   - [详细构建过程(可选):](#详细构建过程可选)
   - [运行 Docker 容器:](#运行-docker-容器)
@@ -9,8 +13,6 @@
     - [测试根路径 (`/`):](#测试根路径-)
     - [测试 GET 请求 (`/items/{item_id}`):](#测试-get-请求-itemsitem_id)
     - [测试 POST 请求 (`/items/`):](#测试-post-请求-items)
-  - [日志查看:](#日志查看)
-  - [存储位置:](#存储位置)
   - [docker compose的作用:](#docker-compose的作用)
   - [附录:构建指令拓展(可选)](#附录构建指令拓展可选)
     - [镜像标签（Tag）的概念](#镜像标签tag的概念)
@@ -19,6 +21,14 @@
     - [多个标签的使用场景:](#多个标签的使用场景)
     - [如何使用带标签的镜像](#如何使用带标签的镜像)
     - [总结](#总结)
+
+## 切换路径:
+
+拉取代码后，将终端路径切换到 `simple_example/docker_example` 所在目录，例如:
+
+```bash
+cd /data/docker_tutorial/simple_example/docker_example
+```
 
 
 ## 构建 Docker 镜像
@@ -124,6 +134,8 @@ Successfully tagged my-fastapi-app:latest
 
 一旦镜像构建完成，你可以使用以下命令运行 Docker 容器:
 
+> 在非 `Dockerfile` 所在目录也能运行。
+
 ```bash
 docker run -d -p 8848:8848 my-fastapi-app
 ```
@@ -227,10 +239,6 @@ curl -X POST "http://localhost:8848/items/" -H "Content-Type: application/json" 
 {"item":{"name":"apple","description":"A juicy fruit","price":1.5,"tax":0.1}}
 ```
 
-
-## 日志查看:
-
-## 存储位置:
 
 ## docker compose的作用:
 
