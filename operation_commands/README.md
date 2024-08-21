@@ -8,6 +8,10 @@
   - [查看容器大小:](#查看容器大小)
     - [解释：](#解释)
     - [Docker 分层文件系统:](#docker-分层文件系统)
+  - [查看已拉取的镜像:](#查看已拉取的镜像)
+    - [终端示例:](#终端示例)
+    - [如何清理这些 `<none>` 镜像](#如何清理这些-none-镜像)
+  - [搜索镜像资源:](#搜索镜像资源)
 
 
 ## 列出当前正在运行的容器:
@@ -130,3 +134,149 @@ Docker 容器基于镜像运行，而镜像本身是由多个只读层组成的�
 总结:
 
 “容器的可写层的大小”反映了容器运行时产生的所有新增或修改的数据的大小，而不仅仅是代码的大小。代码通常位于只读层中，除非你在容器运行时修改了它们。
+
+
+## 查看已拉取的镜像:
+
+下列指令可列出本地 Docker 主机上所有可用镜像:
+
+```bash
+docker images
+```
+
+执行该命令后，终端会显示出所有本地存储的 Docker 镜像的信息，包括以下内容：
+
+- **REPOSITORY**：镜像的名称或仓库名。
+- **TAG**：镜像的标签，通常用于区分不同版本。
+- **IMAGE ID**：镜像的唯一标识符。
+- **CREATED**：镜像创建的时间。
+- **SIZE**：镜像的大小。
+
+这个命令对于查看和管理本地的 Docker 镜像非常有用。
+
+### 终端示例:
+
+```log
+(base) root@iZ2zea5v77oawjy2qz7c20Z:/data/docker_tutorial# docker images
+REPOSITORY                                                              TAG                            IMAGE ID       CREATED         SIZE
+my-fastapi-app                                                          latest                         e7acf350afa6   41 hours ago    169MB
+registry.cn-beijing.aliyuncs.com/peilongchencc_docker_hub/docker_test   latest                         e7acf350afa6   41 hours ago    169MB
+<none>                                                                  <none>                         55e1f853a63e   42 hours ago    169MB
+<none>                                                                  <none>                         56d64b2dbe8c   43 hours ago    161MB
+<none>                                                                  <none>                         09c25e8576e3   44 hours ago    130MB
+<none>                                                                  <none>                         8e1a6b9da7a7   44 hours ago    130MB
+python                                                                  3.11-slim                      10f461201cdb   3 weeks ago     130MB
+milvusdb/milvus                                                         v2.3.2                         4b6c62c2b5f8   9 months ago    868MB
+minio/minio                                                             RELEASE.2023-03-20T20-16-18Z   400c20c8aac0   17 months ago   252MB
+quay.io/coreos/etcd                                                     v3.5.5                         673f29d03de9   23 months ago   182MB
+(base) root@iZ2zea5v77oawjy2qz7c20Z:/data/docker_tutorial# 
+```
+
+在 `docker images` 的输出中显示 `<none>` 作为 `REPOSITORY` 和 `TAG` 的原因通常与以下两种情况之一有关：
+
+1. **无效或未标记的镜像**： 
+
+   - 当你构建一个 Docker 镜像但没有指定 `--tag` 选项时，镜像会创建成功但不会有名称或标签。结果，在 `docker images` 中会显示 `<none>`。
+
+   - 类似地，如果你删除了一个带有特定 `tag` 的镜像标签，但该镜像仍然存在于 Docker 中，没有任何其他标签与之关联，它也会显示为 `<none>`。
+
+2. **中间层镜像（Dangling Images）**：
+
+   - 当你更新或重新构建一个镜像时，旧的镜像层可能不再需要，但还保留在本地，Docker 将这些镜像标记为 `<none>`。
+
+   - 这些通常是“悬空的”镜像，它们不再与任何标签或容器关联。
+
+### 如何清理这些 `<none>` 镜像
+
+你可以使用以下命令来删除这些无用的悬空镜像：
+
+```bash
+docker image prune
+```
+
+这个命令会删除所有没有关联到任何标签的悬空镜像。例如:
+
+```log
+(base) root@iZ2zea5v77oawjy2qz7c20Z:/data/docker_tutorial# docker image prune
+WARNING! This will remove all dangling images.
+Are you sure you want to continue? [y/N] y
+Deleted Images:
+deleted: sha256:09c25e8576e34440623b7b8174664af0e480b95f91c4f3c0355eafc2de80ba39
+deleted: sha256:3d9be9055574ef0477855b5023f45ee2eea4ea38afa428b508026bda70060bdd
+deleted: sha256:56d64b2dbe8c590d59118a7f4a99b9595a8f6f9930f2c579e6b937aa32f4eaaf
+deleted: sha256:e9b86d63587468d963c24f38e4561b90e45fdba5c41752c1d26156c84bf669bd
+deleted: sha256:316a614f843d8a421407264c7a72e500e3780566f568ec85bcb939e89dcbc020
+deleted: sha256:40a7e4cb2044208abf31639598e814918db988b0a112a274b4d8b751cdec5c23
+deleted: sha256:6a05a464d7c1ed4c433869a1b99172bf4831504428e76b18d72ac7776ee62844
+deleted: sha256:e47eb39f3630047ac54c7c82555a8d6420fc64dab75f08c028451fc43bb27f8d
+deleted: sha256:8e1a6b9da7a74f5e82de334e4264654dfebb9a45096de9bcc2c0518bbeb28971
+deleted: sha256:606f6a98d17c8e4ec4c5f19ed32c7333fdfd4020cb5a15cd7c4badbb11351731
+deleted: sha256:55e1f853a63e2255a9da99ff0b9e928d67ca6518dcd61c705c639e1e07ca3e67
+deleted: sha256:a7b0d53fcfd25ac61288f441759f011110fe47949147b4f3645c148150059a83
+deleted: sha256:4d32337ee721058d2fa3c21b910cee886b67fa5a96b8742723303485f5b8b5fc
+deleted: sha256:34e013f62e89ca751c6a14ee616c6c22a2bb94c7e3570e814b298ef82a6fa118
+deleted: sha256:cb9a11bbe7bdf550abb66c5c280e1ce1c8d799aba360c8ebcd91025385bda01e
+deleted: sha256:2da0b4a157e06db892ee3d3e9da5510fbdf1cd3f43d2d0dad1501fae7bd797d4
+
+Total reclaimed space: 70.96MB
+(base) root@iZ2zea5v77oawjy2qz7c20Z:/data/docker_tutorial# docker images
+REPOSITORY                                                              TAG                            IMAGE ID       CREATED         SIZE
+my-fastapi-app                                                          latest                         e7acf350afa6   42 hours ago    169MB
+registry.cn-beijing.aliyuncs.com/peilongchencc_docker_hub/docker_test   latest                         e7acf350afa6   42 hours ago    169MB
+python                                                                  3.11-slim                      10f461201cdb   3 weeks ago     130MB
+milvusdb/milvus                                                         v2.3.2                         4b6c62c2b5f8   9 months ago    868MB
+minio/minio                                                             RELEASE.2023-03-20T20-16-18Z   400c20c8aac0   17 months ago   252MB
+quay.io/coreos/etcd                                                     v3.5.5                         673f29d03de9   23 months ago   182MB
+(base) root@iZ2zea5v77oawjy2qz7c20Z:/data/docker_tutorial# 
+```
+
+
+## 搜索镜像资源:
+
+```bash
+docker search TERM
+```
+
+- `TERM`: 你要搜索的关键字或短语，例如镜像的名称或描述。
+
+> [!CAUTION]
+> docker search 是专门设计用于从 Docker Hub（即官方的 Docker 镜像仓库）搜索镜像资源的，其他镜像仓库(例如 NGC )上的资源，需要自己去对应网站检索、拉取。
+
+例如:
+
+```bash
+docker search pytorch
+```
+
+终端效果:
+
+```log
+(base) root@iZ2zea5v77oawjy2qz7c20Z:/data/docker_tutorial# docker search pytorch
+NAME                                              DESCRIPTION                                     STARS     OFFICIAL   AUTOMATED
+pytorch/libtorch-cxx11-builder                                                                    4                    
+pytorch/manylinux-cuda113                                                                         0                    
+pytorch/manylinux-cuda101                                                                         0                    
+bitnami/pytorch                                    Bitnami container image for PyTorch            72                   
+pytorch/pytorch-binary-docker-image-ubuntu16.04                                                   6                    
+pytorch/manylinux-cuda117                                                                         2                    
+pytorch/manylinux-builder                                                                         1                    
+pytorch/manylinux-cuda110                                                                         1                    
+graphcore/pytorch                                 The Poplar® SDK components required to run P…   4                    
+pytorch/torchserve-nightly                        https://github.com/pytorch/serve                3                    
+opensciencegrid/osgvo-torch                       OSG VO's Torch base image                       0                    
+pytorch/torchaudio_unittest_base                                                                  0                    
+pytorch/conda-cuda                                                                                7                    
+pytorch/pytorch                                   PyTorch is a deep learning framework that pu…   1096                 
+pytorch/manylinux-cuda111                                                                         0                    
+intel/intel-optimized-pytorch                     Containers for running PyTorch workloads on …   14                   
+intel/intel-extension-for-pytorch                                                                 11                   
+airbyte/container-orchestrator                                                                    0                    
+pytorch/manylinux-cuda92                                                                          0                    
+graphcore/pytorch-jupyter                         The Poplar® SDK plus PyTorch for IPUs includ…   5                    
+pytorch/conda-builder                                                                             5                    
+nephio/porch-function-runner                                                                      0                    
+pytorch/torchserve                                                                                27                   
+pytorch/manylinux-cuda102                                                                         4                    
+graphcore/pytorch-geometric-jupyter               The Poplar® SDK components required to run P…   2                    
+(base) root@iZ2zea5v77oawjy2qz7c20Z:/data/docker_tutorial# 
+```
