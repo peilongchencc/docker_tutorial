@@ -239,6 +239,7 @@ VOLUME [ "/root/.cache/huggingface", "/root/.cache/modelscope", "/app/data", "/a
 ```
 
 - **作用**：`VOLUME` 指令声明容器中某些目录为卷。这些目录可以持久化存储，即使容器停止或删除，数据也不会丢失。
+    - 即在宿主机的 `/var/lib/docker/volumes/` 目录下创建一个随机的子目录存储这些信息。
     - 例如，`/app/data` 可能用于存储数据集，`/app/output` 用于保存运行结果。
 
 - **为什么设置卷？**：卷用于数据持久化或共享。如果你不设置卷，容器内的数据会在容器销毁时丢失。
