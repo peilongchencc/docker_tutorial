@@ -145,6 +145,10 @@ sudo systemctl show --property=Environment docker
 
 ### 1. 添加 Docker 镜像加速器地址到 `daemon.json`：
 
+```bash
+vim /etc/docker/daemon.json
+```
+
 示例（使用阿里云的镜像加速器）：
 
 ```json
