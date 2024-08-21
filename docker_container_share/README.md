@@ -267,6 +267,16 @@ registry.cn-beijing.aliyuncs.com/peilongchencc_docker_hub/docker_test:latest
 
 从日志中可以看到，镜像的 SHA256 摘要值，以及拉取镜像的状态是“Downloaded newer image”，说明你成功拉取到了最新版本的镜像。
 
+可以使用 `docker images` 查看拉取的镜像:
+
+```log
+(base) root@ubuntu22:~/data# docker images
+REPOSITORY                                                              TAG                        IMAGE ID       CREATED         SIZE
+registry.cn-beijing.aliyuncs.com/peilongchencc_docker_hub/docker_test   latest                     e7acf350afa6   44 hours ago    169MB
+nvidia/cuda                                                             11.3.1-devel-ubuntu18.04   bc6c1a157465   20 months ago   4.21GB
+(base) root@ubuntu22:~/data# 
+```
+
 ### 7. 启动拉取的docker镜像:
 
 ```bash
