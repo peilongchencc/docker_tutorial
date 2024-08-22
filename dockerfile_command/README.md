@@ -18,7 +18,7 @@ Dockerfile 是用于定义 Docker 镜像的文件。它包含了一系列指令�
       - [8. 执行自定义安装脚本](#8-执行自定义安装脚本)
       - [9. 重建特定组件](#9-重建特定组件)
       - [10. 设置卷（Volumes）](#10-设置卷volumes)
-      - [`docker-compose.yml` 中的 `volumes`:](#docker-composeyml-中的-volumes)
+      - [docker-compose.yml中的volumes(可选):](#docker-composeyml中的volumes可选)
       - [11. 暴露端口](#11-暴露端口)
     - [总结](#总结)
   - [附录: 常用的docker资源网站](#附录-常用的docker资源网站)
@@ -251,7 +251,7 @@ VOLUME [ "/root/.cache/huggingface", "/root/.cache/modelscope", "/app/data", "/a
 
 卷用于数据持久化或共享。如果你不设置卷，容器内的数据会在容器销毁时丢失。
 
-#### `docker-compose.yml` 中的 `volumes`:
+#### docker-compose.yml中的volumes(可选):
 
 如果你只使用 `Dockerfile` 声明 `VOLUME`，会在宿主机的 `/var/lib/docker/volumes/` 目录下创建一个随机的子目录存储这些信息。很多人会感到查看非常不方便，所以很多人会选择配合 `docker-compose.yml` 使用。
 
