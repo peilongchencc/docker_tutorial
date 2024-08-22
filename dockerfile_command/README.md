@@ -18,6 +18,7 @@ Dockerfile 是用于定义 Docker 镜像的文件。它包含了一系列指令�
       - [8. 执行自定义安装脚本](#8-执行自定义安装脚本)
       - [9. 重建特定组件](#9-重建特定组件)
       - [10. 设置卷（Volumes）](#10-设置卷volumes)
+      - [`docker-compose.yml` 中的 `volumes`:](#docker-composeyml-中的-volumes)
       - [11. 暴露端口](#11-暴露端口)
     - [总结](#总结)
   - [附录: 常用的docker资源网站](#附录-常用的docker资源网站)
@@ -238,11 +239,41 @@ RUN pip uninstall -y transformer-engine flash-attn && \
 VOLUME [ "/root/.cache/huggingface", "/root/.cache/modelscope", "/app/data", "/app/output" ]
 ```
 
-- **作用**：`VOLUME` 指令声明容器中某些目录为卷。这些目录可以持久化存储，即使容器停止或删除，数据也不会丢失。
-    - 即在宿主机的 `/var/lib/docker/volumes/` 目录下创建一个随机的子目录存储这些信息。
-    - 例如，`/app/data` 可能用于存储数据集，`/app/output` 用于保存运行结果。
+**作用**：
 
-- **为什么设置卷？**：卷用于数据持久化或共享。如果你不设置卷，容器内的数据会在容器销毁时丢失。
+`VOLUME` 指令声明容器中某些目录为卷。这些目录需要持久化存储，即使容器停止或删除，数据也不会丢失。
+
+  - 即在宿主机的 `/var/lib/docker/volumes/` 目录下创建一个随机的子目录存储这些信息。
+
+  - 例如，`/app/data` 用于存储数据集，`/app/output` 用于保存运行结果。
+
+**为什么设置卷？**：
+
+卷用于数据持久化或共享。如果你不设置卷，容器内的数据会在容器销毁时丢失。
+
+#### `docker-compose.yml` 中的 `volumes`:
+
+如果你只使用 `Dockerfile` 声明 `VOLUME`，会在宿主机的 `/var/lib/docker/volumes/` 目录下创建一个随机的子目录存储这些信息。很多人会感到查看非常不方便，所以很多人会选择配合 `docker-compose.yml` 使用。
+
+`docker-compose.yml` 中的 `volumes` 用来指定 `VOLUME`(Dockerfile中的) 保存在宿主机的位置(目录)。
+
+🚨注意: 在 `docker-compose.yml` 中使用相对路径时，Docker 会根据 `docker-compose.yml` 所在的目录来解析这个路径。
+
+以下内容节选自 LLaMA-Factory 的 `docker-cuda/docker-compose.yml` 文件:
+
+```
+services:
+  llamafactory:
+    volumes:
+      - ../../hf_cache:/root/.cache/huggingface
+      - ../../ms_cache:/root/.cache/modelscope
+      - ../../data:/app/data
+      - ../../output:/app/output
+```
+
+举例说明：
+
+`../../output:/app/output` 表示将 `/app/output` 数据存在 `LLaMA-Factory/output`。
 
 #### 11. 暴露端口
 
