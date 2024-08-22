@@ -2,7 +2,8 @@
 
 Dockerfile 是用于定义 Docker 镜像的文件。它包含了一系列指令，这些指令指定了如何从基础镜像开始，构建出一个包含应用程序和所需依赖的自定义镜像。
 
-本章以 `LLaMA-Factory` 中的 Dockerfile 为例，讲解 Dockerfile 的构建语法。
+本章以 `LLaMA-Factory` 中docker-cuda的 [Dockerfile](https://github.com/hiyouga/LLaMA-Factory/blob/main/docker/docker-cuda/Dockerfile) 为例，讲解 Dockerfile 的构建语法。
+
 - [Docerfile 语法](#docerfile-语法)
   - [LLaMA-Factory中的Dockerfile源文件:](#llama-factory中的dockerfile源文件)
   - [LLaMA-Factory中的Dockerfile解析:](#llama-factory中的dockerfile解析)
