@@ -264,7 +264,7 @@ lines 1-19/19 (END)
 
 ### 启动 Docker 服务:
 
-如果你的Docker服务没有启动，可以运行一下指令启动Docker服务:<br>
+如果你的Docker服务没有启动，可以运行以下指令启动Docker服务:<br>
 
 ```bash
 sudo systemctl start docker
