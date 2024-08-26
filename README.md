@@ -1,6 +1,6 @@
 # Docker Tutorial
 
-本项目用于介绍 Docker、Docker Compose 的使用。
+本项目用于介绍 Docker、Docker Compose 的使用，请根据 **文件简介** 跳转个人想要了解的内容。
 
 - [Docker Tutorial](#docker-tutorial)
   - [文件简介:](#文件简介)
