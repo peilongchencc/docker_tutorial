@@ -253,3 +253,5 @@ REPOSITORY                 TAG       IMAGE ID       CREATED          SIZE
 docker-cuda-llamafactory   latest    c11dc2063efa   45 minutes ago   22.7GB
 (base) root@ubuntu22:~/data/LLaMA-Factory-main/docker/docker-cuda# 
 ```
+
+恭喜🎉，成功以Docker方式启动LLaMA-Factory了～
