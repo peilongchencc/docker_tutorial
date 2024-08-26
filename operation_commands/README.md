@@ -2,19 +2,59 @@
 
 本章介绍 docker 容器操作指令。
 - [docker容器操作指令](#docker容器操作指令)
-  - [列出当前正在运行的容器:](#列出当前正在运行的容器)
-  - [显示所有容器，包括已经停止的容器:](#显示所有容器包括已经停止的容器)
-  - [关闭/删除容器:](#关闭删除容器)
-  - [查看容器大小:](#查看容器大小)
-    - [解释：](#解释)
-    - [Docker 分层文件系统:](#docker-分层文件系统)
-  - [查看已拉取的镜像:](#查看已拉取的镜像)
+  - [前言:](#前言)
+    - [1. 镜像 (Image)](#1-镜像-image)
+    - [2. 容器 (Container)](#2-容器-container)
+    - [总结](#总结)
+  - [容器操作:](#容器操作)
+    - [列出当前正在运行的容器:](#列出当前正在运行的容器)
+    - [显示所有容器，包括已经停止的容器:](#显示所有容器包括已经停止的容器)
+    - [关闭/删除容器:](#关闭删除容器)
+    - [查看容器大小:](#查看容器大小)
+      - [解释：](#解释)
+      - [Docker 分层文件系统:](#docker-分层文件系统)
+  - [镜像操作:](#镜像操作)
+    - [查看已拉取的镜像:](#查看已拉取的镜像)
     - [终端示例:](#终端示例)
+    - [镜像引用分析:](#镜像引用分析)
+    - [镜像和标签的关系](#镜像和标签的关系)
+    - [镜像引用分析结论:](#镜像引用分析结论)
+    - [删除镜像:](#删除镜像)
     - [如何清理这些 `<none>` 镜像](#如何清理这些-none-镜像)
-  - [搜索镜像资源:](#搜索镜像资源)
+    - [搜索镜像资源:](#搜索镜像资源)
 
 
-## 列出当前正在运行的容器:
+## 前言:
+
+介绍docker容器操作指令前，我们先理清一下 **"镜像"、"容器"** 的概念:
+
+**镜像** 和 **容器** 是 Docker 中的两个核心概念，但它们的功能和用途不同。理解它们的区别有助于更好地使用 Docker。
+
+### 1. 镜像 (Image)
+
+- 定义：镜像是一个只读的模板，包含了运行应用程序所需的文件系统和内容。镜像可以包含操作系统、应用程序、依赖库和配置文件。
+- 用途：镜像是创建容器的基础。你可以把它看作是一个应用程序或服务的“快照”。
+- 静态性：镜像是不可变的，一旦创建，内容不会改变。
+
+比喻：镜像就像一个安装程序（例如 `.exe` 文件），包含了应用程序和所有需要的依赖，但它本身并不运行。
+
+### 2. 容器 (Container)
+
+- 定义：容器是镜像的一个实例，它是一个运行时环境，包含了应用程序的所有依赖和代码。🔥容器是通过镜像启动的，并在其中运行一个或多个进程。
+- 用途：容器是一个独立运行的环境，可以用来运行应用程序。容器具有隔离性，每个容器在各自独立的环境中运行。
+- 动态性：容器是动态的，可以启动、停止、删除。容器的数据和状态会根据运行时的操作而变化。
+
+比喻：容器就像你安装并运行的一个软件实例（如在 Windows 上运行的一个程序），它是基于安装程序（镜像）创建的，并在运行时具有状态。
+
+### 总结
+
+- **镜像**：是静态的、只读的模板，用来创建容器。
+- **容器**：是动态的、可运行的实例，是通过镜像创建的。
+
+
+## 容器操作:
+
+### 列出当前正在运行的容器:
 
 ```bash
 docker ps
@@ -36,8 +76,7 @@ CONTAINER ID   IMAGE            COMMAND                  CREATED          STATUS
 - **PORTS**: 容器暴露的端口以及对应的宿主机端口映射。
 - **NAMES**: Docker 自动生成或用户自定义的容器名称。
 
-
-## 显示所有容器，包括已经停止的容器:
+### 显示所有容器，包括已经停止的容器:
 
 ```bash
 docker ps -a
@@ -45,8 +84,7 @@ docker ps -a
 
 🚨可有效删除那些你构建成功，但启动失败的容器。
 
-
-## 关闭/删除容器:
+### 关闭/删除容器:
 
 要关闭/删除容器，跟容器的 `CONTAINER ID` 或 `NAMES` 有关，例如:
 
@@ -66,8 +104,7 @@ docker stop 75351a8cb88e
 docker rm -f my-fastapi-app
 ```
 
-
-## 查看容器大小:
+### 查看容器大小:
 
 要查看一个 Docker 容器的大小，你可以终端使用下列指令：
 
@@ -94,14 +131,14 @@ dec75f4de335   my-fastapi-app   "/bin/bash -c '. doc…"   16 hours ago   Up 16 
 
 容器的总大小就是 `170MB`，**不需要再加上 `139kB`**。
 
-### 解释：
+#### 解释：
 
 - **170MB (Virtual Size)**: 这是容器的**总体大小**，包括基础镜像和容器的可写层(`139kB`)。
 
 - **139kB (Size)**: 这是容器的**可写层大小**，表示容器启动后发生的更改或新增数据的大小。
 
 
-### Docker 分层文件系统:
+#### Docker 分层文件系统:
 
 我简单解释下 Docker 分层文件系统，帮助你理解什么是可写入层:
 
@@ -136,7 +173,11 @@ Docker 容器基于镜像运行，而镜像本身是由多个只读层组成的�
 “容器的可写层的大小”反映了容器运行时产生的所有新增或修改的数据的大小，而不仅仅是代码的大小。代码通常位于只读层中，除非你在容器运行时修改了它们。
 
 
-## 查看已拉取的镜像:
+## 镜像操作:
+
+### 查看已拉取的镜像:
+
+🚨记得笔者在 **前言** 说的，容器和镜像是不一样的概念‼️
 
 下列指令可列出本地 Docker 主机上所有可用镜像:
 
@@ -186,6 +227,61 @@ quay.io/coreos/etcd                                                     v3.5.5  
 
    - 这些通常是“悬空的”镜像，它们不再与任何标签或容器关联。
 
+### 镜像引用分析:
+
+参考上述 `docker images` 信息，假设你想要删除 `my-fastapi-app` 对应的镜像。
+
+删除前，应该先分析下是否有共用镜像( `IMAGE ID` 相同)的情况(即同一个镜像起了多个容器)，例如:
+
+```bash
+REPOSITORY                                                              TAG                            IMAGE ID       CREATED         SIZE
+my-fastapi-app                                                          latest                         e7acf350afa6   6 days ago      169MB
+registry.cn-beijing.aliyuncs.com/peilongchencc_docker_hub/docker_test   latest                         e7acf350afa6   6 days ago      169MB
+```
+
+🚨注意，这两行的 `IMAGE ID` 都是 `e7acf350afa6`，说明这两个标签 (`my-fastapi-app:latest` 和 `registry.cn-beijing.aliyuncs.com/peilongchencc_docker_hub/docker_test:latest`) 实际上指向同一个镜像。
+
+### 镜像和标签的关系
+
+- **镜像**: 是由 `IMAGE ID` 唯一标识的，它代表了实际的存储数据和文件系统层。
+- **标签**: 是指向某个镜像的别名。一个镜像可以有多个标签，而这些标签都共享同一个 `IMAGE ID`。
+
+当你删除其中一个标签时，例如 `my-fastapi-app:latest`，镜像本身不会被删除，因为它仍然被另一个标签（`registry.cn-beijing.aliyuncs.com/peilongchencc_docker_hub/docker_test:latest`）引用。
+
+### 镜像引用分析结论:
+
+因此，当你看到多个标签拥有相同的 `IMAGE ID` 时，这意味着它们指向的是同一个镜像。你需要删除所有指向这个镜像的标签，镜像才会从本地存储中完全删除。
+
+### 删除镜像:
+
+```bash
+docker rmi my-fastapi-app
+docker rmi registry.cn-beijing.aliyuncs.com/peilongchencc_docker_hub/docker_test:latest
+```
+
+终端显示:
+
+```log
+(base) root@iZ2zea5v77oawjy2qz7c20Z:/data/docker_tutorial# docker rmi my-fastapi-app
+Untagged: my-fastapi-app:latest
+(base) root@iZ2zea5v77oawjy2qz7c20Z:/data/docker_tutorial# docker rmi registry.cn-beijing.aliyuncs.com/peilongchencc_docker_hub/docker_test:latest
+Untagged: registry.cn-beijing.aliyuncs.com/peilongchencc_docker_hub/docker_test:latest
+Untagged: registry.cn-beijing.aliyuncs.com/peilongchencc_docker_hub/docker_test@sha256:7a31f8df4eaebebbc4cb2cd1942c702d68976f34ed0883b051936b3df73f39ae
+Deleted: sha256:e7acf350afa617f83402f44d45f2a33b3f8687078bf919ed3c4a56996802cdc3
+Deleted: sha256:4d3dbcee5dccadf2c560ca56ee3f7ded8d767ec5495c6eab3b2ac8d5047e9f13
+Deleted: sha256:4fd569c4b1b050fb8112857f47e413d0bb48ea1004d1681d955cb1233c295690
+Deleted: sha256:91ae11f9e1bcd96165a2eacf44515feeaf3549d32385c92b5bfd01e8c3d683b3
+Deleted: sha256:8132666f84f834b626f9deaaa983d3dc25f184c7ec34e95b0b6e1048d8a68fe7
+Deleted: sha256:7e20b64410e655f94a1050cb7248c3bb509032aac41075a9f110f450141f1c6f
+Deleted: sha256:03da3981c191035438edf16d3d126688353a3817dfd05ee0e2256b3f0e6045d0
+Deleted: sha256:5a83e857e8a5539b1fb863785e13ad4b17358d70dc6bd4e63a25aabb03c5eff6
+(base) root@iZ2zea5v77oawjy2qz7c20Z:/data/docker_tutorial# 
+```
+
+这个输出表示你成功地移除了 `my-fastapi-app:latest` 标签。
+
+这个输出表示你成功地移除了两个特定的Docker镜像( `my-fastapi-app:latest` 和 `registry.cn-beijing.aliyuncs.com/peilongchencc_docker_hub/docker_test:latest` )。在删除后，其对应的文件和存储层也都被清理掉了。
+
 ### 如何清理这些 `<none>` 镜像
 
 你可以使用以下命令来删除这些无用的悬空镜像：
@@ -230,8 +326,7 @@ quay.io/coreos/etcd                                                     v3.5.5  
 (base) root@iZ2zea5v77oawjy2qz7c20Z:/data/docker_tutorial# 
 ```
 
-
-## 搜索镜像资源:
+### 搜索镜像资源:
 
 ```bash
 docker search TERM
