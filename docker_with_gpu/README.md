@@ -3,6 +3,7 @@
 本章以[Docker启动 LLaMA-Factory 为例](https://github.com/peilongchencc/My-LLaMA-Factory/tree/main/cuda_docker_run)，讲解如何在Docker中使用GPU。
 - [Docker识别并使用GPU](#docker识别并使用gpu)
   - [问题描述:](#问题描述)
+  - [nvidia-container-toolkit安装:](#nvidia-container-toolkit安装)
     - [方法一: nvidia官方提供的安装方式:](#方法一-nvidia官方提供的安装方式)
       - [1. 配置代码仓库:](#1-配置代码仓库)
       - [2. 更新包列表:](#2-更新包列表)
@@ -13,7 +14,7 @@
       - [3. 解压文件:](#3-解压文件)
       - [4. 按依赖顺序安装 .deb 文件:](#4-按依赖顺序安装-deb-文件)
       - [5. 验证安装:](#5-验证安装)
-    - [修改 Docker 配置文件:](#修改-docker-配置文件)
+  - [Docker 配置文件修改:](#docker-配置文件修改)
     - [测试效果:](#测试效果)
 
 
@@ -35,6 +36,9 @@ CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
 ```
 
 🚨这是因为你的服务器没有配置 **"显卡直通"** ，Docker容器无法识别、使用GPU。需要安装 **"nvidia-container-toolkit"**，并修改 Docker 的配置文件（通常是 `/etc/docker/daemon.json`），让Docker 能够识别并使用 GPU 。
+
+
+## nvidia-container-toolkit安装:
 
 可以从以下两种方法中任选其一，下载、安装 **"nvidia-container-toolkit"**:
 
@@ -175,7 +179,8 @@ build flags: -D_GNU_SOURCE -D_FORTIFY_SOURCE=2 -DNDEBUG -std=gnu11 -O2 -g -fdata
 
 现在，你已经成功安装了 NVIDIA Container Toolkit 1.16.1，并正确配置了环境。根据 `nvidia-container-cli --version` 的输出，工具包已经正确安装并可以正常使用。
 
-### 修改 Docker 配置文件:
+
+## Docker 配置文件修改:
 
 1. 使用 `nvidia-ctk` 命令配置容器运行时：
 
@@ -215,7 +220,6 @@ INFO[0000] It is recommended that docker daemon be restarted.
 (base) root@ubuntu22:~/data/LLaMA-Factory-main/docker/docker-cuda# sudo systemctl restart docker
 (base) root@ubuntu22:~/data/LLaMA-Factory-main/docker/docker-cuda# 
 ```
-
 
 ### 测试效果:
 
