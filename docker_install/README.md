@@ -221,14 +221,30 @@ Docker version 24.0.2, build cb74dfc
 
 ### 查看Docker Compose版本的指令如下:
 
+旧版指令:
+
 ```bash
 docker-compose --version
 ```
 
-终端显示如下信息:<br>
+终端显示如下:
 
 ```log
 docker-compose version 1.17.1, build unknown
+```
+
+新版指令:
+
+```bash
+docker compose version
+```
+
+终端显示:
+
+```log
+(base) root@iZ2zea5v77oawjy2qz7c20Z:/data# docker compose version
+Docker Compose version v2.4.1
+(base) root@iZ2zea5v77oawjy2qz7c20Z:/data#
 ```
 
 ### 检查 Docker 服务的状态(按q键退出检查状态):

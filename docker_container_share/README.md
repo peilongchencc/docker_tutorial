@@ -17,6 +17,7 @@
     - [6. 测试拉取:](#6-测试拉取)
     - [7. 启动拉取的docker镜像:](#7-启动拉取的docker镜像)
     - [8. 测试效果:](#8-测试效果)
+  - [附录: 使用docker compose启动容器](#附录-使用docker-compose启动容器)
   - [附录: 修改从阿里云ACR拉取的镜像名称](#附录-修改从阿里云acr拉取的镜像名称)
     - [1. 为镜像打上本地标签:](#1-为镜像打上本地标签)
     - [2. 使用本地标签启动容器:](#2-使用本地标签启动容器)
@@ -315,6 +316,49 @@ curl -X POST "http://localhost:8848/items/" -H "Content-Type: application/json" 
 ```
 
 成功！可喜可贺🎉🎉🎉
+
+
+## 附录: 使用docker compose启动容器
+
+在任意位置创建一个`docker-compose.yml`文件，然后填入下列内容:
+
+> 为了便于管理，任意位置最好是有意义的。
+
+```yml
+version: '3'  # 定义 docker-compose 文件版本，3.x 版本的 Compose 文件格式(和 Docker Compose版本不是一回事)
+
+services:
+  docker_test:
+    # 使用从阿里云镜像仓库拉取的 docker_test 镜像
+    image: registry.cn-beijing.aliyuncs.com/peilongchencc_docker_hub/docker_test:latest
+    
+    # 将宿主机的 8848 端口映射到容器的 8848 端口
+    ports:
+      - "8848:8848"
+    
+    # 无论何时停止，都自动重启容器(生产环境很有用)
+    restart: always
+    container_name: my_docker_test  # 指定容器名称(对应服务启动后的 "NAMES")
+```
+
+终端输入下列指令启动服务:
+
+```bash
+docker compose up -d
+```
+
+终端显示:
+
+```log
+(base) root@iZ2zea5v77oawjy2qz7c20Z:/data/docker_tutorial/docker_container_share# docker compose up -d
+[+] Running 2/2
+ ⠿ Network docker_container_share_default  Created                                                                                                                                    0.1s
+ ⠿ Container my_docker_test                Started                                                                                                                                    0.4s
+(base) root@iZ2zea5v77oawjy2qz7c20Z:/data/docker_tutorial/docker_container_share# docker ps
+CONTAINER ID   IMAGE                                                                          COMMAND                  CREATED         STATUS         PORTS                                       NAMES
+a524732553df   registry.cn-beijing.aliyuncs.com/peilongchencc_docker_hub/docker_test:latest   "/bin/bash -c '. doc…"   5 seconds ago   Up 3 seconds   0.0.0.0:8848->8848/tcp, :::8848->8848/tcp   my_docker_test
+(base) root@iZ2zea5v77oawjy2qz7c20Z:/data/docker_tutorial/docker_container_share#
+```
 
 
 ## 附录: 修改从阿里云ACR拉取的镜像名称
