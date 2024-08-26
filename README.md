@@ -19,3 +19,4 @@
 | simple_example          | 将python应用程序打包，介绍docker的简单使用    |                             |
 | dockerfile_command      | 介绍Dockerfile的基本语法                   | 附常用的docker资源网站         |
 | docker_compose_use      | 介绍Docker Compose的基本使用               |                              |
+| docker_with_gpu         | 介绍Docker如何识别并使用GPU                 | 以Docker启动LLaMA-Factory为例讲解|
