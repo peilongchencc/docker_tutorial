@@ -20,7 +20,8 @@
     - [将 Docker 添加到启动项，以确保在系统重新启动时 Docker 会自动启动：](#将-docker-添加到启动项以确保在系统重新启动时-docker-会自动启动)
     - [查看本地镜像库所有docker镜像:](#查看本地镜像库所有docker镜像)
   - [卸载Docker Compose:](#卸载docker-compose)
-  - [K8s介绍:](#k8s介绍)
+  - [sudo apt update更新docker时出错:](#sudo-apt-update更新docker时出错)
+    - [解决方法：](#解决方法)
 
 
 ## Docker和Docker Compose 安装:
@@ -320,8 +321,76 @@ sudo docker images
 sudo apt remove docker-compose
 ```
 
-## K8s介绍:
+## sudo apt update更新docker时出错:
 
-Kubernetes（简称K8s）不是一个容器，而是一个开源的容器编排系统，用于自动化部署、扩展和管理容器化应用程序。它提供了一个平台，使得您可以方便地管理和调度位于物理或虚拟机上的容器。Kubernetes 使得运行和管理跨多个容器（如Docker或rkt等）的应用程序变得更加简单高效。<br>
+常规情况下，国内服务器是无法连接到`download.docker.com`(除非你终端科学上网)。
 
-简单来说，如果把容器比作轿车，那么Kubernetes就像是交通管理系统，负责指挥和调度这些车辆在道路上高效安全地行驶。<br>
+如果你按照笔者的操作，设置了清华源docker，但更新包索引时(`sudo apt update`)依旧提示要连接`download.docker.com`。示例如下:
+
+```log
+(langchain) root@iZ2ze50qtwycx9cbbvesvxZ:/project# sudo apt update
+Hit:1 http://mirrors.cloud.aliyuncs.com/ubuntu jammy InRelease
+Hit:2 http://mirrors.cloud.aliyuncs.com/ubuntu jammy-updates InRelease
+Hit:3 http://mirrors.cloud.aliyuncs.com/ubuntu jammy-backports InRelease           
+Hit:4 http://mirrors.cloud.aliyuncs.com/ubuntu jammy-security InRelease            
+Get:5 https://mirrors.tuna.tsinghua.edu.cn/docker-ce/linux/ubuntu jammy InRelease [48.8 kB]
+Get:6 https://mirrors.tuna.tsinghua.edu.cn/docker-ce/linux/ubuntu jammy/stable amd64 Packages [38.6 kB]
+Ign:7 https://download.docker.com/linux/ubuntu jammy InRelease                                                                                                                            
+Ign:7 https://download.docker.com/linux/ubuntu jammy InRelease             
+Ign:7 https://download.docker.com/linux/ubuntu jammy InRelease
+Err:7 https://download.docker.com/linux/ubuntu jammy InRelease
+  Cannot initiate the connection to download.docker.com:443 (2a03:2880:f11a:83:face:b00c:0:25de). - connect (101: Network is unreachable) Could not connect to download.docker.com:443 (128.242.245.93), connection timed out
+Fetched 87.4 kB in 37s (2,338 B/s)
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+43 packages can be upgraded. Run 'apt list --upgradable' to see them.
+W: Failed to fetch https://download.docker.com/linux/ubuntu/dists/jammy/InRelease  Cannot initiate the connection to download.docker.com:443 (2a03:2880:f11a:83:face:b00c:0:25de). - connect (101: Network is unreachable) Could not connect to download.docker.com:443 (128.242.245.93), connection timed out
+W: Some index files failed to download. They have been ignored, or old ones used instead.
+(langchain) root@iZ2ze50qtwycx9cbbvesvxZ:/project/chenpeilong/ssl_connect# 
+```
+
+建议查看`/etc/apt/sources.list.d/`路径下查看链接源都是什么。以下是笔者操作的服务器的情况:
+
+```log
+(langchain) root@iZ2ze50qtwycx9cbbvesvxZ:/etc/apt/sources.list.d# ll
+total 16
+drwxr-xr-x 2 root root 4096 Sep  4 10:44 ./
+drwxr-xr-x 8 root root 4096 May 15  2023 ../
+-rw-r--r-- 1 root root  148 Jul 10 09:29 archive_uri-https_download_docker_com_linux_ubuntu-jammy.list
+-rw-r--r-- 1 root root  147 Sep  4 10:44 docker.list
+(langchain) root@iZ2ze50qtwycx9cbbvesvxZ:/etc/apt/sources.list.d# cat archive_uri-https_download_docker_com_linux_ubuntu-jammy.list 
+deb [arch=amd64] https://download.docker.com/linux/ubuntu jammy stable
+# deb-src [arch=amd64] https://download.docker.com/linux/ubuntu jammy stable
+(langchain) root@iZ2ze50qtwycx9cbbvesvxZ:/etc/apt/sources.list.d# cat docker.list 
+deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://mirrors.tuna.tsinghua.edu.cn/docker-ce/linux/ubuntu jammy stable
+(langchain) root@iZ2ze50qtwycx9cbbvesvxZ:/etc/apt/sources.list.d# 
+```
+
+从输出信息可以看出，`/etc/apt/sources.list.d/` 目录中存在两个与 Docker 相关的源配置文件：
+
+1. `archive_uri-https_download_docker_com_linux_ubuntu-jammy.list` 指向官方的 Docker 源 (`download.docker.com`)。
+2. `docker.list` 指向清华镜像源。
+
+要解决问题，需要移除或禁用官方的 Docker 源 (`archive_uri-https_download_docker_com_linux_ubuntu-jammy.list`)，因为它是导致系统尝试连接 `download.docker.com` 的原因。
+
+### 解决方法：
+
+1. **删除官方 Docker 源**：
+
+运行以下命令来删除该文件：
+
+```bash
+sudo rm /etc/apt/sources.list.d/archive_uri-https_download_docker_com_linux_ubuntu-jammy.list
+```
+
+2. **清理并更新源列表**：
+
+删除文件后，运行以下命令来清理缓存并更新软件包列表：
+
+```bash
+sudo apt clean
+sudo apt update
+```
+
+这样做后，系统将只从清华源下载 Docker 相关的资源，避免再次尝试连接 `download.docker.com`。
